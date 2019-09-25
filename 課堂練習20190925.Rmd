@@ -1,0 +1,124 @@
+---
+title: "Untitled"
+author: "Joey"
+date: "2019-09-25"
+output: html_document
+---
+
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr);
+library(tidyr); library(showtext)
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+```{r cars}
+df_gatherExample <- data.frame(
+  country=c("A","B","C"),
+  `1999`=c("0.7k","37k","212k"),
+  `2000`=c("2k","80k","213k"),
+  check.names = F
+)
+```
+
+
+```{r cars}
+df_gatherExample
+gather(df_gatherExample,
+       `1999`,`2000`,
+       key="年份",value="人口") #gather中的變數選擇可使用select helper
+```
+
+
+
+```{r pressure, echo=FALSE}
+library(readr)
+collegeData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/103_student.csv")
+```
+
+
+```{r pressure, echo=FALSE}
+gather(collegeData,
+       contains("生"),key = "類別",value = "人數") ->collegeDataGather
+```
+
+
+```{r pressure, echo=FALSE}
+library(readr)
+```
+
+```{r pressure, echo=FALSE}
+df_taoyuanMarriage <- read_csv("https://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=f95d1a33-ec56-44c5-a9ec-3afba8157e39&rid=fd2070ef-7431-4f9c-bc3a-82d7bfbcd2fb")
+```
+
+```{r}
+df_taoyuanMarriage %>%
+gather(
+  -月份區域別, #endswith()
+       key = "月份" ,value = "對數") ->df_taoyuanMarriageGather
+
+```
+
+#每個月桃園總結婚對數
+```{r}
+df_taoyuanMarriageGather %>%
+  group_by(月份) %>%
+  summarise(總結婚對數 = sum(對數)) ->df_taoyuanMarriageGatherSum
+```
+
+#每個地區結婚最高峰月份
+```{r}
+df_taoyuanMarriageGather %>%
+  group_by(月份區域別) %>%
+  summarise(最高峰月份 = 月份[[which.max(對數)]]) ->df_taoyuanMarriageGather_max
+```
+
+
+```{r}
+df_spreadExample <- data.frame(
+  id = c(1,1,1,2,2,2),
+  var = c("花朶萼片長度", "學名", "總類數"),
+  value = c(5.1, "setosa", 1, 
+            7.0, "versicolor", 2))
+```
+
+```{r}
+df_spreadExample
+spread(df_spreadExample,
+       var,value) %>% View
+```
+
+```{r}
+collegeDataGather %>%
+  spread(
+    類別,人數
+  )
+```
+
+```{r}
+df_twbankExchangeRate <- read_csv("http://www.bot.com.tw/Govinfo/opendata/csv/151/20180101-20181231-FXCRT.csv")
+```
+```{r}
+df_twbankExchangeRate %>%
+  select(-即期賣出匯率) %>%
+  spread(
+    幣別,即期買入匯率
+  ) ->df_twbankExchangeRate_spread
+```
+
+#變數類別調整
+```{r}
+df_twbankExchangeRate %>%
+  mutate(即期買入匯率 = as.numeric(即期買入匯率),
+  幣別 = as.factor(幣別),
+  即期賣出匯率 = as.numeric(即期賣出匯率),
+  日期 = lubridate::ymd(日期)) ->df_twbankExchangeRate
+```
+
+```{r}
+
+```
+

@@ -310,7 +310,6 @@ collegeData %>%
   summarise(.,一年級男女生比例 = sum(一年級男生)/sum(一年級女生)
             ) %>%
   ungroup() ->collegeDataResult 
-
 which.max(collegeDataResult)
   
 ```
