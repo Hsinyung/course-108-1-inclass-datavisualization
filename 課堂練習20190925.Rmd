@@ -69,7 +69,7 @@ df_taoyuanMarriageGather %>%
   summarise(總結婚對數 = sum(對數)) ->df_taoyuanMarriageGatherSum
 ```
 
-#每個地區結婚最高峰月份
+#每個地區結婚最高峰月份!!!!
 ```{r}
 df_taoyuanMarriageGather %>%
   group_by(月份區域別) %>%
@@ -119,6 +119,180 @@ df_twbankExchangeRate %>%
 ```
 
 ```{r}
+library(readr); library(dplyr)
+# 線上引入原始資料成字串向量
+read_lines("http://www.taifex.com.tw/data_gov/taifex_open_data.asp?data_name=DailyForeignExchangeRates") ->
+  originalLines
+
+# 將字串由CP950編碼改成UTF8再讀成data frame data2
+originalLines %>%
+  iconv(from="CP950",to="UTF8") %>% 
+  read_csv() -> data2
+```
+
+
+```{r}
+library(lubridate)
+taifex_open_data %>%
+  mutate(日期 = ymd(日期)) -> taifex_open_data
+```
+
+#資料引入!!
+```{r}
+library(readr)
+read_lines("
+http://data.cec.gov.tw/選舉資料庫/voteDate.csv") ->governmentData
+```
+
+```{r}
+library(readr)
+subsetDataTWbank <- read_csv("https://www.dropbox.com/s/t8ulj3d7cgl8jh5/subsetDataTWbank.csv?dl=1")
+```
+
+```{r}
+library(lubridate)
+subsetDataTWbank %>%
+  ym(年月) ->subsetDataTWbank
+```
+```{r}
+library(ggplot2)
+ggplot(subsetDataTWbank)+
+  geom_line(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )
+```
+```{r}
+library(ggplot2)
+ggplot(subsetDataTWbank)+
+  geom_point(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )
+```
+
+#pipe
+```{r}
+subsetDataTWbank %>%
+  ggplot() +
+  geom_point(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )+
+  geom_line(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )
+```
+
+```{r}
+subsetDataTWbank %>%
+  gather(contains("定存利率"),key = "定存類型" , value = "利率") ->subsetDataTWbank_gather 
+subsetDataTWbank_gather %>%  
+  ggplot()+
+  geom_boxplot(aes(x = 定存類型 , y = 利率))
+#boxplot 看資料的離散程度(四分位差)
+#點代表outlier(極端值)
+```
+
+```{r}
+library(ggplot2)
+ggplot(subsetDataTWbank)+
+  geom_line(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )+
+  geom_point(
+    aes(x=西元年月,y=`定存利率-一個月-固定`)
+  )
+```
+
+#可以直接疊加(inherit)
+```{r}
+library(ggplot2)
+ggplot(subsetDataTWbank,
+       aes(x=西元年月,y=`定存利率-一個月-固定`))+
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+subsetDataTWbank_gather %>%
+  ggplot()+
+  geom_line(
+    aes(x=西元年月,y=利率,color=定存類型)
+  ) #必須先gather才有辦法畫3條線，因X軸為"定存類型"
+```
+
+```{r}
+library(ggplot2)
+ggplot(subsetDataTWbank)+
+  geom_line(
+    aes(x=西元年月,y=`定存利率-一個月-固定`),
+    color="red",
+    alpha = 1,  #透明度，1完全不透明、0完全透明
+    size = 2  #必跟著連續變數
+  )
+```
+
+##字串變數
+```{r}
+subsetDataTWbank_gather$定存類型 %>% 
+  as.factor %>% levels
+```
+
+```{r}
+subsetDataTWbank_gather %>%
+  mutate(
+    定存類型=factor(定存類型,levels=c("定存利率-一個月-固定","定存利率-二年期-固定","定存利率-三年期-固定")) #打出的順序即為資料順序
+  ) -> subsetDataTWbank_gather
+
+#重新製圖
+subsetDataTWbank_gather %>%
+  ggplot()+
+  geom_boxplot(aes(x=定存類型,y=利率))
+```
+
+
+
+
+
+```{r}
+twCalendar <- c("民國88年11月1日","民國88年12月1日","民國89年1月1日")
+```
+
+```{r}
+twCalendar %>%
+  # 取出字串中的數字部份
+  stringr::str_extract_all("[:digit:]+") %>%
+  # 將每個日期的「年」數字加上1911再合併年月日成為`yyyy-mm-dd`格式
+  purrr::map_chr(
+             function(x) {
+               x1=as.integer(x[[1]])+1911
+               x[[1]]=as.character(x1)
+               stringr::str_c(x,collapse="-")
+             }
+             ) -> westernCalendar
+```
+
+
+```{r}
+westernCalendar %>%
+  lubridate::ymd() -> datetimeCalendar
+class(datetimeCalendar)
+```
+
+```{r}
+subsetDataTWbank %>%
+  mutate(
+    年月=年月 %>%
+      stringr::str_extract_all("[:digit:]+") %>% #取出數字部分，因有"/"
+      purrr::map_chr(
+                 function(x) {
+                   x1=as.integer(x[[1]])+1911
+                   x[[1]]=as.character(x1)
+                                stringr::str_c(x,collapse="-")
+                 }
+                 ),
+    年月日=stringr::str_c(年月,"01",sep="-"), #加上01日期
+    西元年月日=lubridate::ymd(年月日) #轉為時間class
+  ) ->subsetDataTWbank
+
 
 ```
 
