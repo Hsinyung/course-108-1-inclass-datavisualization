@@ -87,15 +87,14 @@ df_example %>%
 basicBoxplot
 ```
 ```{r}
-colorspace::sequential_hcl(n = 9, h = 270, c = c(70, NA, NA), l = c(25, 95), power = 1, register = "Custom-Palette") ->color1
-color1
+
 ```
 
-```{r}
-colorspace::diverging_hcl(n = 7, h = c(260, 0), c = 80, l = c(30, 90), power = 1.5, register = "Custom-Palette") ->color2
+```{r wrong}
+colorspace::diverging_hcl(n = 9, h = c(260, 0), c = 80, l = c(30, 90), power = 1.5, register = "Custom-Palette")
 
 basicBoxplot +
-  scale_fill_discrete_qualitative(palette="color2",nmax=5)
+  scale_fill_discrete_diverging(palette="Custom-Palette",nmax=5)
 ```
 
 
@@ -116,8 +115,10 @@ df_example %>%
 
 
 ```{r}
+colorspace::sequential_hcl(n = 9, h = 270, c = c(70, NA, NA), l = c(25, 95), power = 1, register = "Custom-Palette2") 
+
 basicScatterPlot +
-  scale_color_continuous_sequential(palette = "color1")
+  scale_color_continuous_sequential(palette = "Custom-Palette2")
 ```
 
 ```{r}
@@ -128,5 +129,14 @@ basicScatterPlot+
 ```{r}
 basicBoxplot+
   scale_fill_brewer(type="seq" , palette = "RdPu")
+```
+
+```{r}
+disposableIncome <- read_csv("https://www.dropbox.com/s/z80sbjw94cjex8x/disposableIncome.csv?dl=1",
+locale = locale(encoding = "BIG5"), skip = 4)
+```
+```{r}
+disposableIncome %>%
+  select()
 ```
 
