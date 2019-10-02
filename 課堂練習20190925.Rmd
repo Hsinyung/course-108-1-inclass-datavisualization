@@ -256,6 +256,8 @@ subsetDataTWbank_gather %>%
 twCalendar <- c("民國88年11月1日","民國88年12月1日","民國89年1月1日")
 ```
 
+
+
 ```{r}
 twCalendar %>%
   # 取出字串中的數字部份

@@ -13,7 +13,7 @@ params:
 library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr);
 library(tidyr); library(showtext)
 
-font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
 showtext_auto(enable=TRUE) #啟用字體
 theme_set(theme_classic())
 knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
@@ -38,39 +38,31 @@ knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.show
   
 ```{r data cleaning, echo=TRUE, eval=T}
 # 資料引入
-load("C:/Users/user/Downloads/example_data.Rda")->dataList
-
-# 資料處理
-employmentLaborForceData1 <- dataList$勞動力$data
-employmentLaborForceData1 %>%
-  tidyr::gather(`年平均勞動力`,`年平均就業人口`, key="類別",value="人數（千）") %>%
-  mutate(
-    年=as.integer(as.character(年))
-  ) -> graphData_employment
-
-# 作圖用資料物件生成：處理好可進行作圖的資料請存在一個名為graphData的list物件裡
-graphData <- list()
-graphData$graphData_employment <- graphData_employment
+library(dplyr); library(readr); library(tmcn)
+load("example_data.Rda")
+names(dataList) %>% toUTF8 -> names(dataList)
+dataList$勞動力
 ```
 
-#### 繪圖程式
 
-```{r graph, echo=T, eval=T}
-graphData$graphData_employment %>%
-  filter(年>=1995) %>%
-  ggplot()+
-  geom_line(
-    aes(
-        x=年,
-        y=`人數（千）`,
-        group=類別,
-        color=類別),
-    size=1
-  )
+```{r}
+dataList$勞動力$data -> df_勞動力
+names(df_勞動力) %>% parse_character() #自動轉譯
+names(df_勞動力) %>% guess_encoding() #猜測encoding
 ```
 
-#### 設計說明
-說明想傳達的訊息（必要）及設計想法（非必要）。寫在***之後
-*** 
+```{r}
+Sys.getlocale()
+Sys.info() #可取得作業系統訊息
+```
 
-圖為台灣1995年之後的勞動力與就業人口趨勢，95年勞動力人口為9百21萬人，就業人口為9百零4萬5千人，就業比例（即就業率）為百分之98.21； ，到2018年勞動力人口為1千1百87萬4千人，就業人口為1千1百43萬4千人，就業率為百分之96.29。
+
+```{r}
+#若要更改為英文語系，Windows 作業系統使用者可以在 R Console 輸入：
+
+Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
+
+#Mac 作業系統使用者可以在 R Console 輸入：
+
+Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
+```
