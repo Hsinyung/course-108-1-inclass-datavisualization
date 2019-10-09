@@ -38,6 +38,7 @@ knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.show
 ```{r data cleaning, echo=TRUE, eval=T}
 disposableIncome <- read_csv("https://www.dropbox.com/s/z80sbjw94cjex8x/disposableIncome.csv?dl=1",
 locale = locale(encoding = "BIG5"), skip = 4)
+graphData <- list()
 
 disposableIncome %>%
   slice(c(25:43)) ->disposableIncome
@@ -68,14 +69,14 @@ disposableIncome %>%
 disposableIncomeGather %>%
   mutate(
     對平均所得 = factor(對平均所得,levels = c("最低平均所得對平均所得","次低平均所得對平均所得","中間平均所得對平均所得","次高平均所得對平均所得","最高平均所得對平均所得"))
-  ) ->disposableIncomeGather
+  ) ->graphData$disposableIncomeGather
 
 ```
 
 #### 繪圖程式
 
 ```{r graph, echo=T, eval=T}
-disposableIncomeGather %>%
+graphData$disposableIncomeGather %>%
   ggplot(
     aes(x=西元年份,y=比例,color=對平均所得)
     )+
