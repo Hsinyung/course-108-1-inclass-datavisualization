@@ -1,0 +1,92 @@
+---
+title: "每週一圖作業"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(tidyr); library(showtext)
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+#### 資料處理
+
+此部份在做：
+
+  * 原始Rda資料引入（即引入**dataList**物件）；
+  
+  * 資料清理成作圖用graphData物件。
+
+請將你最原始的資料連同作業一起上傳到作業上傳網址：  
+  * 若「原始資料為網頁下載」，且下載指令寫在data cleaning chunk裡的話，可以不用上傳「資料」。  
+  * 若原始資料有很多個檔案，請先引入成data frame並存在「一個」.Rda檔裡上傳（如`example_data.Rda`檔）。  
+
+資料檔引入到進入作圖前的資料處理請寫在下面區塊，分二部份：
+
+  * 資料處理  
+  * 作圖用資料物件生成
+  
+```{r data cleaning, echo=TRUE, eval=T}
+StudyAbroad <- read_csv("https://ws.moe.edu.tw/Download.ashx?u=C099358C81D4876CC7586B178A6BD6D5062C39FB76BDE7EC0A43CF0811EC32188607BD3CEF6924F4985BE598D34AC32D646870B72E2CEE1E501390ECA4254E485DF61F1D40C45E1EA5128ADAE48CA667&n=817FB214356653D488EFDAC057EA6B2F5C8E72C806B4DD8C31219F6FE56A4DD8A9E2832F8D03514B01288DC51AEBA2CFBF5634A67196D8D94C73E9E5FA995572&icon=..csv")
+
+graphData <- list()
+
+StudyAbroad %>%
+  mutate(
+    年度 = 年度 + 1911
+  ) -> StudyAbroad
+StudyAbroad %>%
+  group_by(
+    洲別,年度
+  ) %>%
+  summarise(
+    人數 = sum(總人數)
+  ) -> StudyAbroad
+
+StudyAbroad %>%
+  filter(年度 == 2017) ->StudyAbroad
+
+StudyAbroad %>%
+  mutate(
+    洲別=factor(洲別,levels=c("亞洲","美洲","歐洲","大洋洲"))
+  ) -> StudyAbroad
+```
+
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+
+library(grDevices) # 不同顏色模型代碼的呈現及轉換
+library(scales) # show_col()螢幕立即顯示顏色
+library(colorspace) # 調色盤選擇及ggplot應用工具
+library(shinyjs) # 支援套件
+#choose_palette(gui="shiny")
+
+colorspace::diverging_hcl(n = 5, h = c(240, 15), c = c(60, 80), l = c(75, 5), power = c(1.2, 1.5), register = "myPallete") 
+#show_col(myPallete)
+
+StudyAbroad %>%
+  ggplot(aes(x=洲別,y=人數)) +
+  labs(y = "人數(2017)",x="四大洲",title = "我國2017年赴四大洲留學人數(不含中國)") +
+  geom_bar(stat="identity", position=position_dodge())+ 
+  geom_col(aes(fill = 洲別)) +
+  scale_fill_discrete_diverging(palette = "myPallete") +
+  theme(legend.position = "none")+
+  geom_text(aes(label=str_c(round(人數))),size = 6,color = "red")
+```
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***之後
+*** 此圖為2017年我國學生到各大洲留學的人數，其中可以發現以美洲為大宗。另外較令人驚訝的是亞洲及歐洲留學人數甚至少於大洋洲，但是因為資料中不含中國，所以有其爭議性，我們可以假設若將中國算入，亞洲人數應會再增加不少。
+
+
