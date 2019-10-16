@@ -58,7 +58,7 @@ StudyAbroad %>%
 StudyAbroad %>%
   mutate(
     洲別=factor(洲別,levels=c("亞洲","美洲","歐洲","大洋洲"))
-  ) -> StudyAbroad
+  ) -> graphData$StudyAbroad
 ```
 
 
