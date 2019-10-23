@@ -1,0 +1,252 @@
+---
+title: "Untitled"
+author: "Joey"
+date: "2019年10月23日"
+output: html_document
+---
+
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr);
+library(tidyr); library(showtext)
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+
+## How to replicatel
+```{r}
+disease <-load(url("https://github.com/tpemartin/course-108-1-inclass-datavisualization/blob/master/%E4%BD%9C%E5%93%81%E5%B1%95%E7%A4%BA/homework3/graphData_homework3_005.Rda?raw=true"))
+c('area','age','性別','n')->names(graphdata[[1]])
+```
+
+```{r}
+## ----graph, echo=T, eval=T-----------------------------------------------
+library(ggalluvial)
+#is_alluvia_form(as.data.frame(graphdata), axes = 1:3, silent = TRUE)
+                                          finalplot<-ggplot(as.data.frame(graphdata),
+       aes(y = n, axis1 = age, axis2 =area)) +
+  geom_alluvium(aes(fill=性別), width = 1/10) +
+  geom_stratum(width = 1/10, fill = "gray", color = "white") +
+  geom_label(stat = "stratum", label.strata = TRUE) +scale_x_discrete(limits = c("age", "area"), expand = c(.1, .1)) +scale_fill_brewer(type = "qual", palette = "Set2")+
+ggtitle("2018年登革熱病例統計")+ylab('確診人數')+theme(title = element_text(family ="QYuan" ))
+finalplot                                                                    
+
+```
+
+```{r}
+library(readr)
+library2014 <- read_csv("https://www.dropbox.com/s/999hy0u1y98y6ep/library2014.csv?dl=1")
+
+library2014 %>%
+  mutate(
+    學院=reorder(學院,學號,length,order=T),
+    讀者年級=reorder(讀者年級,讀者年級, order=T)
+  ) -> library2014
+graphList <- list()
+
+library2014 %>% 
+  ggplot()-> graphList$圖書_ggplotOnly
+
+graphList$圖書_ggplotOnly+
+  geom_bar(
+    aes(x=學院), fill="#5A99B3", width=0.7
+    )
+```
+
+##使用geom_bar
+```{r}
+graphList$圖書_ggplotOnly+
+  geom_bar(
+    aes(x=學院) # 預設 stat="count"
+  )
+```
+
+##使用 stat_count
+
+```{r}
+graphList$圖書_ggplotOnly +
+  stat_count(
+    aes(x=學院), 
+    geom="bar" # geom_bar內訂會取 count來當y
+  )
+```
+
+## 用stat_count()算比例
+```{r}
+graphList$圖書_ggplotOnly +
+  stat_count(
+    aes(x=學院,y=stat(prop)), 
+    geom="bar" # geom_bar內訂會取 count來當y
+  )
+```
+
+##設定group
+```{r}
+graphList$圖書_ggplotOnly +
+  stat_count(
+    aes(x=學院,y=stat(prop),group="全校"),  ##""內可隨意，只是將所有變數丟進同一個group
+    geom="bar" # geom_bar內訂會取 count來當y
+  )
+```
+
+##使用geom_bar()呈現比例
+```{r}
+graphList$圖書_ggplotOnly +
+  geom_bar(
+    aes(x=學院,y=stat(prop),group="學校"),
+    stat="count"
+  )
+```
+
+##比例標字
+
+```{r}
+graphList$圖書_ggplotOnly +
+  geom_bar(
+    aes(x=學院,y=stat(prop),group="學校")
+  )+
+  stat_count(
+    aes(x=學院,y=stat(prop),label=stat(prop),group="學校"), geom="text"
+  )
+```
+
+
+##
+```{r}
+graphList$圖書_ggplotOnly +
+  geom_bar(
+    aes(x=學院)
+  )+
+  stat_count(
+    aes(x=學院,y=stat(count),label=stat(count)), geom="text"
+  )
+```
+
+```{r}
+graphList$圖書_ggplotOnly +
+  geom_bar(
+    aes(x=學院, y=stat(prop), group="全校") 
+  )+
+  stat_count(
+    aes(
+      x=學院,
+      y=stat(prop), group="全校",
+      label=round(stat(prop),digits=2)),
+    geom="text",
+    color="red", nudge_y=-0.01
+  )+
+  labs(
+    title="各院借閱人次佔總人次比",x="",y=""
+  )
+```
+
+##override stat
+```{r}
+graphList$圖書_ggplotOnly +
+  geom_bar(
+    aes(x=學院, y=stat(prop), group="全校") 
+  )+
+  geom_text(
+    aes(
+      x=學院,
+      y=stat(prop), group="全校",
+      label=round(stat(prop),digits=2)),
+    stat="count",
+    color="white",nudge_y=-0.01 ##將字的y軸往下推，只能使用geom_text
+  )+
+  labs(
+    title="各院借閱人次佔總人次比",x="",y=""
+  )
+```
+
+##自創stat function
+```{r}
+df_x <- data.frame(
+  x=rnorm(500,mean=2,sd=1)
+) #隨機抽500個常態分配
+```
+
+```{r}
+df_x %>%
+  ggplot(aes(x=x))+
+  geom_histogram(
+    aes(y=stat(density))
+  )
+```
+
+```{r}
+df_x %>%
+  ggplot(aes(x=x))+
+  geom_histogram(
+    aes(y=stat(density))
+  )+
+  stat_function(
+    fun=dnorm, args = list(mean=2, sd=1) # dnorm 為常態分配density函數
+  )
+```
+
+##市場供需
+```{r}
+market_demand <- function(x, a=1, b=-1){
+  return(a+b*x)
+}
+
+market_supply <- function(x, a=0, b=1){
+  return(a+b*x)
+}
+
+df_grids <- 
+  data.frame(
+    x=seq(0,1,by=0.2))#按照0.2切
+```
+
+
+```{r}
+df_grids %>%
+  ggplot(aes(x=x))+ #圖上的x等於df_grids的x
+  stat_function(
+    fun="market_demand"
+  )+
+  stat_function(
+    fun="market_supply"
+  )+
+  scale_y_continuous(
+    limits = c(0,1) ##不一定需要
+  )+
+  stat_function(
+    fun = "market_supply",
+    args = list(b=0.8),color="red"
+  )+
+  labs(
+    x="Quantity", y="Price"
+  ) -> graphList$demand_supply
+
+graphList$demand_supply
+```
+
+```{r}
+graphList$demand_supply+
+  stat_function(
+    fun="market_demand",
+    args=list(b=-2), color='red'
+  )
+```
+
+##stat_summary
+```{r}
+graphList$demand_supply+
+  geom_ribbon(  #須找出x與y的min與Max
+    data=data.frame(
+      x=seq(0.25,0.5,by=0.01) #x從0.25走到0.5
+    ),
+    aes(y=x), ##當y=x時停止
+    stat="summary", 
+    fun.ymin= function(y) market_demand(y), ##找出x對應的y,demand's height
+    fun.ymax= function(y) market_supply(y), ##找出x對應的y,supply's height
+    alpha=0.8,color="blue"
+  )
+```
+

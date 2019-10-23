@@ -1,7 +1,7 @@
 ---
 title: "Untitled"
 author: "Joey"
-date: "2019年9月11日"
+date: "2019年10月23日"
 output: html_document
 ---
 
@@ -16,22 +16,27 @@ knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.show
 ```
 
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## How to replicatel
+```{r}
+disease <-load(url("https://github.com/tpemartin/course-108-1-inclass-datavisualization/blob/master/%E4%BD%9C%E5%93%81%E5%B1%95%E7%A4%BA/homework3/graphData_homework3_005.Rda?raw=true"))
+c('area','age','性別','n')->names(graphdata[[1]])
 ```
 
-## Including Plots
+```{r}
+## ----graph, echo=T, eval=T-----------------------------------------------
+library(ggalluvial)
+#is_alluvia_form(as.data.frame(graphdata), axes = 1:3, silent = TRUE)
+                                          finalplot<-ggplot(as.data.frame(graphdata),
+       aes(y = n, axis1 = age, axis2 =area)) +
+  geom_alluvium(aes(fill=性別), width = 1/10) +
+  geom_stratum(width = 1/10, fill = "gray", color = "white") +
+  geom_label(stat = "stratum", label.strata = TRUE) +scale_x_discrete(limits = c("age", "area"), expand = c(.1, .1)) +scale_fill_brewer(type = "qual", palette = "Set2")+
+ggtitle("2018年登革熱病例統計")+ylab('確診人數')+theme(title = element_text(family ="QYuan" ))
+finalplot                                                                    
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+
+```
+

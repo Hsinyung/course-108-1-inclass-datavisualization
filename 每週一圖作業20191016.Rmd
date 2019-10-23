@@ -1,0 +1,85 @@
+---
+title: "每週一圖作業"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(tidyr); library(showtext)
+
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+#### 資料處理
+
+此部份在做：
+
+  * 原始Rda資料引入（即引入**dataList**物件）；
+  
+  * 資料清理成作圖用graphData物件。
+
+請將你最原始的資料連同作業一起上傳到作業上傳網址：  
+  * 若「原始資料為網頁下載」，且下載指令寫在data cleaning chunk裡的話，可以不用上傳「資料」。  
+  * 若原始資料有很多個檔案，請先引入成data frame並存在「一個」.Rda檔裡上傳（如`example_data.Rda`檔）。  
+
+資料檔引入到進入作圖前的資料處理請寫在下面區塊，分二部份：
+
+  * 資料處理  
+  * 作圖用資料物件生成
+  
+```{r data cleaning, echo=TRUE, eval=T}
+library(readr)
+library100_102 <- read_csv("https://www.dropbox.com/s/wuo5o6l55lk68l6/library100_102.csv?dl=1")
+
+graphData <- list()
+
+library100_102 %>%
+  group_by(書籍類別,讀者年級) %>%
+  summarise(
+    借閱冊數 = length(學號)
+  ) -> libraryArrange
+
+
+as.factor(libraryArrange$讀者年級) ->libraryArrange$讀者年級
+
+libraryArrange %>% na.omit() %>%
+  slice(c(1:44)) -> graphData$libraryArrange
+```
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+library(grDevices) # 不同顏色模型代碼的呈現及轉換
+library(scales) # show_col()螢幕立即顯示顏色
+library(colorspace) # 調色盤選擇及ggplot應用工具
+library(shinyjs) # 支援套件
+#choose_palette(gui="shiny")
+colorspace::sequential_hcl(n = 15, h = 260, c = c(80, NA, NA), l = c(20, 90), power = 1.5, register = "Custom-Palette")
+
+graphData$libraryArrange %>%
+  ggplot() +
+  geom_tile(aes(x=讀者年級,y=書籍類別,fill=借閱冊數)) +
+  scale_fill_continuous_sequential(palette = "Custom-Palette") +
+  labs(title = "國立臺北大學圖書館借閱比較",
+       subtitle = "依書籍類別及讀者年級(2011-2013入學)",
+       caption = "資料來源:國立臺北大學圖書館") +
+  theme(plot.background = element_rect(fill="#EEC9CB", colour = "black"))
+```
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***之後
+*** 在此圖中可以非常明顯看出在臺北大學圖書館中，被借閱最多的書籍類別為語言文學類。而在此類別中，又以大三的人借最多(約11000本)。此圖將借閱數量高達一萬本以上的類別以特別鮮艷的藍色表示，以凸顯其數量。
+
+其次，在語言文學類之下的則是社會科學類，其值可看出約落在5000-7500之間。其中也是以大三、大四的借閱量最多。
+
+而其他類別的書籍則都落在5000之下，因為並未想要凸顯5000以下的書籍借閱量，因此在顏色上較不明顯，不過依然可以些微看出大部分借書的高峰年級大約皆落在三年級或四年級的時候。或許是因為作業需要或者是由於課堂時數較少，較有時間閱讀其他書籍。但推測以作業需要佔大多數。
+
+
