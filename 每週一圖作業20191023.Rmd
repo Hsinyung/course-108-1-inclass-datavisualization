@@ -1,0 +1,87 @@
+---
+title: "每週一圖作業"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(tidyr); library(showtext)
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+#### 資料處理
+
+此部份在做：
+
+  * 原始Rda資料引入（即引入**dataList**物件）；
+  
+  * 資料清理成作圖用graphData物件。
+
+請將你最原始的資料連同作業一起上傳到作業上傳網址：  
+  * 若「原始資料為網頁下載」，且下載指令寫在data cleaning chunk裡的話，可以不用上傳「資料」。  
+  * 若原始資料有很多個檔案，請先引入成data frame並存在「一個」.Rda檔裡上傳（如`example_data.Rda`檔）。  
+
+資料檔引入到進入作圖前的資料處理請寫在下面區塊，分二部份：
+
+  * 資料處理  
+  * 作圖用資料物件生成
+  
+```{r data cleaning, echo=TRUE, eval=T}
+load(url("https://github.com/tpemartin/course-108-1-inclass-datavisualization/blob/master/%E4%BD%9C%E5%93%81%E5%B1%95%E7%A4%BA/homework2/graphData_homework2_025.Rda?raw=true")) 
+
+names(graphData$traffic) %>% # 檢查travelerFromAsia dataframe欄位名稱
+tmcn::toUTF8() -> names(graphData$traffic) # 正確轉成utf8 存回原欄位名稱
+
+graphData$traffic %>%
+  mutate(
+    自強號 = 自強號-自強號[1],
+    莒光號 = 莒光號-莒光號[1],
+    區間列車 = 區間列車 - 區間列車[1],
+    高鐵 = 高鐵 - 高鐵[1]
+  ) ->graphData$traffic
+graphData$traffic <-graphData$traffic[c("年別","區間列車","高鐵","自強號","莒光號")]
+```
+
+
+
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+library(grDevices) # 不同顏色模型代碼的呈現及轉換
+library(scales) # show_col()螢幕立即顯示顏色
+library(colorspace) # 調色盤選擇及ggplot應用工具
+library(shinyjs) # 支援套件
+#choose_palette(gui="shiny")
+colorspace::sequential_hcl(n = 7, h = c(140, 138), c = c(50, NA, 62), l = c(20, 86), power = c(0.7, 1.8), register = "Custom-Palette")
+
+library(reshape2)
+graphData$traffic %>%
+  melt(id.vars="年別") %>%
+    ggplot(aes(x=年別,
+               y=value)) + 
+    geom_line(aes(color=variable),size=1.2
+            ) +
+  geom_vline(aes(xintercept=2015),size = 0.005)+
+  geom_hline(aes(yintercept=0),linetype="twodash",size = 0.05,color="red") +
+  scale_color_discrete("運輸工具")+
+  scale_color_discrete_sequential(palette = "Custom-Palette")+
+  labs(title = "2012-2017大眾運輸工具載客變化",
+       subtitle="(以2012為基期)",
+       x = "年份",y = "載客量")
+```
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***之後
+*** 
+
+
