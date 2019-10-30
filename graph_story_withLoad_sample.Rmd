@@ -1,0 +1,39 @@
+---
+title: "每週一圖20191023"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+rm(list=ls())
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace)
+
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(fig.align='center', fig.showtext=T)
+```
+
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+load("graphData.Rda") # 此行為第一行
+
+
+```
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***下一行。
+
+*** 
+根據原作者的想傳達的訊息，主要是強調從2012-2017年各大眾交通運輸工具的載客量變化。因此我在此將其改成變化量，並以2012年為基期。
+在區間列車方面，載客量年年上升，根據原作者判斷是由於對短程交通的需求升高。
+根據原作者的訊息，在2015-2016高鐵苗栗、彰化、雲林站的開通，使高鐵載客量有明顯的上升。而莒光號基本上在2013年之後不斷呈現負成長，自強號也在2015年後載客量有下降趨勢。
+
