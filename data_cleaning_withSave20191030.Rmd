@@ -1,0 +1,49 @@
+---
+title: "每週一圖20191023"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+rm(list=ls())
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace)
+
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(fig.align='center', fig.showtext=T)
+```
+
+#### 資料處理
+  
+```{r data cleaning, echo=TRUE, eval=T}
+課程名稱 <-c("資料科學程式設計(ㄧ)","大一國文","體育","微積分",
+         "經濟學原理","會計學","電腦概論與程式設計","社會學","國際政治經濟學","生物科技與當代世界","兩岸關係與國際政治")
+
+平均成績 <-c(82,82.5,90,84,93,92,84.5,94,82,85,86)
+學分數 <-c(2,4,0,6,8,6,4,3,4,2,2)
+必選修 <-c("必修","必修","必修","必修","必修","必修","選修","選修","選修","通識","通識")
+
+myData <- data.frame(課程名稱,平均成績,學分數,必選修)
+graphData <- list()
+
+myData %>%
+  group_by(必選修) %>%
+  summarise(必選修平均成績 = weighted.mean(平均成績,學分數)) ->graphData$myData1
+
+graphData$myData1 %>%
+  mutate(
+    必選修 = factor(必選修,levels=c("必修","選修","通識"))
+  ) -> graphData$myData1
+
+save(graphData,file = "graphData.Rda")
+
+# save(<所有在graph_story.Rmd要用的物件列出來，中間用逗號分隔>, file="graphData.Rda") # 此行放在最後一行
+```
+

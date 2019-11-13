@@ -1,0 +1,60 @@
+---
+title: "每週一圖20191023"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+rm(list=ls())
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace)
+
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(fig.align='center', fig.showtext=T)
+```
+
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+load("graphData.Rda") # 此行為第一行
+
+
+#choose_palette(gui="shiny")
+colorspace::diverging_hcl(n = 3, h = c(260, 360), c = c(137, 55), l = c(90, 93), power = c(0.8, 1), register = "Custom-Palette")
+
+
+
+graphData$myData1 %>%
+  ggplot(aes(x=必選修,y=必選修平均成績)) +
+  geom_bar(stat="identity", position=position_dodge(),width = 0.05)+ 
+  geom_col(aes(fill = 必選修))+
+  scale_fill_discrete_diverging (palette = "Custom-Palette")+
+  labs(title = "107學年度學年成績表(經濟系)",subtitle = "以必選修類型分類",y="學年平均成績",x = "課程類型")+
+  theme(plot.background = element_rect(fill = "black"),
+        panel.background = element_rect(fill = "black"),
+        axis.text = element_text(color = "white"),
+        axis.ticks = element_line(color = "white"),
+        axis.title = element_text(color = "white"),
+        axis.line = element_line(color = "white"),
+        plot.title = element_text(color = "white",face="bold"),
+        plot.subtitle = element_text(color = "white"),
+        legend.background = element_rect(fill="black"),
+        legend.text = element_text(color = "white"),
+        legend.title = element_text(color = "white"))+
+   geom_hline(aes(yintercept=80),linetype="twodash",size = 0.05,color="red")
+```
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***下一行。
+
+*** 
+想要透過成績介紹自己的大一生活，因為大一的生活老實說也只有在讀書，所以能夠想盪表達的方式只有這一種。
+
