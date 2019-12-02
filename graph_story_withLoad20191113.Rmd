@@ -1,0 +1,123 @@
+---
+title: "每週一圖20191113"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+rm(list=ls())
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace);
+library(cowplot);library(magick);library(grid)
+
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(fig.align='center', fig.showtext=T)
+```
+
+
+#### 繪圖程式
+
+```{r graph, echo=T, eval=T}
+load("graphData.Rda") # 此行為第一行
+#choose_palette(gui="shiny")
+
+
+photograph %>%
+  ggplot(aes(x=攝影作品,y = 張數))+
+  geom_bar(stat="identity",position = position_dodge(),fill="#002BA4")+
+  geom_text(aes(label=張數),position = position_stack(vjust = 0.95),color="white")+
+  labs(title = "攝影作品")+
+  theme(
+    plot.background = element_rect(fill = "#A7C6DD"),
+    panel.background = element_rect(fill = "#A7C6DD"),
+    axis.title = element_text(hjust = 10,face ="bold",color = "#002BA4"),
+    axis.text = element_text(color = "#002BA4"),
+    plot.title = element_text(color = "#002BA4"),
+    plot.caption  = element_text(color = "#002BA4"),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank()
+  )->plot.photograph
+
+painting %>%
+  ggplot(aes(x=手工作品,y=件數))+
+  geom_bar(stat="identity",fill="#002BA4")+
+  geom_text(aes(label=件數),position = position_stack(vjust =0.95),color="white")+
+  labs(title = "手工作品")+
+  theme(
+    plot.background = element_rect(fill = "#A7C6DD"),
+    panel.background = element_rect(fill = "#A7C6DD"),
+    axis.title = element_text(color = "#002BA4"),
+    axis.text = element_text(color = "#002BA4"),
+    plot.title = element_text(color = "#002BA4"),
+    plot.caption  = element_text(color = "#002BA4"),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank()
+  ) ->plot.painting
+
+personality %>%
+  ggplot(aes(x = 個性,y = 分數))+
+  geom_point(shape = 18,size = 4,color = "#002BA4")+
+  scale_y_continuous(limits = c(1,5))+
+  labs(title = "人格特質",
+       caption = "資料來源：CakeResume")+
+  theme(
+    plot.background = element_rect(fill = "#A7C6DD"),
+    panel.background = element_rect(fill = "#A7C6DD"),
+    axis.title = element_text(color = "#002BA4"),
+    axis.text = element_text(color = "#002BA4"),
+    plot.caption  = element_text(color = "#002BA4"),
+    panel.grid.major = element_line(color = "white"),
+    plot.title = element_text(color = "#002BA4"),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank()
+  ) ->plot.personality
+
+ggdraw()+
+  draw_plot(plot.personality, 0.5, 0, 0.5, 0.45) +  
+  draw_plot(plot.photograph, 0, 0, 0.5, 0.9) +   
+  draw_plot(plot.painting, 0.5, 0.45, 0.5, 0.45)
+grid.text("陳昱珊 臺北市立大學 視覺藝術學系", x = 0.5, y = 0.95)
+
+
+##可以適當消除x,y軸，讓圖片看起來更加簡潔
+  
+```
+
+
+
+
+#### 設計說明
+說明想傳達的訊息（必要）及設計想法（非必要）。寫在***下一行。
+
+*** 
+原先履歷的作者對於攝影及美術方面頗有興趣，也希望可以應徵這方面的工作。
+
+其作者原先也有過一些作品，所以我將作品的數量呈現出來，主要想表達她自身做過的作品，由於關於藝術方面的作品的美感很難用數據表達，所以選擇展現數量。
+
+至於人格特質方面，是我藉由作者的自我介紹以自己的想法用分數表現出來，在表現上可能不甚準確。以1-5為評價，其中1為最低，5為最高。這些都是作者願意寫在履歷表上的人格特質，所以我認為應該都不會太差，因此，在這方面上我最低只給到3分，算是屬於中間值。
+
+最後是作者的就業經驗。作者的就業經驗老實說幾乎和攝影、美術方面不太有關係，我認為這對作者希望應徵的工作可能沒有太大加分，所以我便沒有以圖展示出來。
+
+資料來源：https://www.cakeresume.com/resumes/rosarosa161

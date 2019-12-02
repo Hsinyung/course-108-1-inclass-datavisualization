@@ -1,0 +1,98 @@
+---
+title: "webpage20191127"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard);library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr);
+library(tidyr); library(showtext);library(sf)
+
+source("https://www.dropbox.com/s/8ndtvzqbdb4cb93/data_visulaization_pk.R?dl=1")
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T,echo = F)   ##column加起來等於1000，沒有長度概念
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+library(plotly);library(dplyr)
+load(url("https://github.com/tpemartin/course-108-1-inclass-datavisualization/blob/master/%E4%BD%9C%E5%93%81%E5%B1%95%E7%A4%BA/homework2/graphData_homework2_025.Rda?raw=true")) 
+
+names(graphData$traffic) %>% # 檢查travelerFromAsia dataframe欄位名稱
+tmcn::toUTF8() -> names(graphData$traffic) # 正確轉成utf8 存回原欄位名稱
+
+自強號 = 自強號-自強號[1],
+    莒光號 = 莒光號-莒光號[1],
+    區間列車 = 區間列車 - 區間列車[1],
+    高鐵 = 高鐵 - 高鐵[1]
+
+graphData$traffic <-graphData$traffic[c("年別","區間列車","高鐵","自強號","莒光號")]
+
+
+graphData$traffic %>%
+  mutate(
+    自強號 = 自強號 - 
+  ) ->graphData$traffic
+
+
+library(grDevices) # 不同顏色模型代碼的呈現及轉換
+library(scales) # show_col()螢幕立即顯示顏色
+library(colorspace) # 調色盤選擇及ggplot應用工具
+library(shinyjs) # 支援套件
+#choose_palette(gui="shiny")
+colorspace::sequential_hcl(n = 7, h = c(140, 138), c = c(50, NA, 62), l = c(20, 86), power = c(0.7, 1.8), register = "Custom-Palette")
+
+library(reshape2)
+graphData$traffic %>%
+  melt(id.vars="年別") %>%
+    ggplot(aes(x=年別,
+               y=value)) + 
+    geom_line(aes(color=variable),size=1.2
+            ) +
+  geom_vline(aes(xintercept=2015),size = 0.01,color="orange")+
+  geom_hline(aes(yintercept=0),linetype="twodash",size = 0.05,color="gray") +
+  scale_color_discrete_sequential(palette = "Custom-Palette",guide=guide_legend("運輸工具"))+
+  labs(title = "2012-2017大眾運輸工具載客變化",
+       subtitle="(以2012為基期)",
+       x = "年份",y = "載客量")+
+  theme(plot.background = element_rect(fill = "#9B4322"),
+        panel.background = element_rect(fill = "#9B4322"),
+        axis.ticks.x = element_line(color = "white"),
+        axis.ticks.y = element_line(color = "white"),
+        axis.text.x = element_text(color = "white"),
+        axis.text.y = element_text(color = "white"),
+        axis.title.x = element_text(color = "white"),
+        axis.title.y = element_text(color = "white"),
+        axis.line = element_line(color = "white"),
+        plot.title = element_text(color = "white",face = "bold"),
+        plot.subtitle = element_text(color = "white"),
+        legend.background = element_rect(fill = "#9B4322"),
+        legend.text=element_text(colour="white"),
+        legend.title = element_text(color = "white"))
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+

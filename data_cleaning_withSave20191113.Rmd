@@ -1,0 +1,49 @@
+---
+title: "每週一圖20191113"
+output: html_document
+params:
+  組員: ["鄭喬翊"]  
+  學號: ["410773098"]
+---
+
+#### 環境設定
+
+以下為老師執行時一定會存在的環境設定
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+rm(list=ls())
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace)
+
+#font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(fig.align='center', fig.showtext=T)
+```
+
+#### 資料處理
+  
+```{r data cleaning, echo=TRUE, eval=T}
+
+攝影作品 <-c("影片","海報","其他","形象","活動","選物","人像","服飾")
+張數 <- c(3,6,10,18,20,28,31,37)
+
+手工作品 <- c("油畫","水彩","複合媒材","插畫")
+件數 <- c(1,3,4,6)
+
+
+個性 <- c("細心","吃苦耐勞","耐心","固執","溝通")
+分數 <- c(4,4,5,4,3)
+
+
+photograph <-data.frame(攝影作品,張數)
+painting <- data.frame(手工作品,件數)
+personality <-data.frame(個性,分數)
+
+
+graphData <- list()
+
+save(photograph,painting,personality,file = "graphData.Rda")
+
+# save(<所有在graph_story.Rmd要用的物件列出來，中間用逗號分隔>, file="graphData.Rda") # 此行放在最後一行
+```
+

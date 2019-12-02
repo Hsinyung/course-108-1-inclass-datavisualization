@@ -250,5 +250,52 @@ df_mrt
 
 #homework 中和新蘆線
 ```{r}
+sf_mrtStops_tpe %>%
+  filter(
+    stringr::str_detect(經過路線,"O")
+  ) -> sf_mrt_tpe_o
 
+sf_mrt_tpe_o %>%
+  mutate(
+    站號 = stringr::str_extract(
+      經過路線,"(?<=(O))[:digit:]+"   #找出屬於O字眼之後的數字，使data照順序
+    )
+  ) %>%
+  arrange(站號)-> sf_mrt_tpe_o
 ```
+
+
+```{r}
+sf_mrt_tpe_o %>%
+  st_coordinates() %>%
+  st_linestring() -> sfg_mrt_o
+
+
+
+sfg_mrt_o_final <- st_multilinestring(
+  list(
+    rbind(
+      c(1,0),
+      c(2,3),
+      c(-1,3)),
+    
+    rbind(
+      c(-2,3),
+      c(-1,-1))
+    )
+  )
+
+mline %>% ggplot()+geom_sf()
+```
+
+
+
+```{r}
+Taiwan <- read_sf("C:/Users/user/Documents/GitHub/secondpractice310/course-108-1-inclass-datavisualization/mapdata201907311006")
+```
+
+```{r}
+Taiwan %>%
+  ggplot() + geom_sf()
+```
+

@@ -1,0 +1,230 @@
+---
+title: "Untitled"
+author: "Joey"
+date: "2019年10月23日"
+output: html_document
+---
+
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr);
+library(tidyr); library(showtext);library(sf);library(cowplot);library(magick);library(grid)
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+
+```{r}
+# 取出spData套件附的world data
+data(world,package="spData")
+class(world) # 已是sf object
+```
+
+
+```{r}
+world %>% st_geometry() %>%
+  ggplot()+geom_sf()
+```
+
+
+
+```{r}
+world %>%
+  st_crs()
+```
+
+
+```{r}
+world %>% 
+  st_transform(crs="+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs") -> world_proj
+  
+world_proj %>%
+  ggplot()+geom_sf()
+```
+
+
+```{r}
+sf_taiwan <- read_sf("C:/Users/user/Documents/GitHub/secondpractice310/course-108-1-inclass-datavisualization/mapdata201907311006")
+
+```
+
+
+```{r}
+sf_taiwan %>%
+  rmapshaper::ms_simplify() -> sf_taiwan_simplify
+
+sf_taiwan_simplify %>%
+  st_crop(
+    xmin=119, xmax=123,
+    ymin=21, ymax=26
+  ) %>%
+  ggplot()+geom_sf()
+```
+
+```{r}
+sf_taiwan_simplify %>%
+  st_crop(
+    xmin=119, xmax=123,
+    ymin=21, ymax=26
+  ) %>%
+  ggplot()+geom_sf()
+
+world %>%
+  st_crop(
+    xmin=119, xmax=123,
+    ymin=21, ymax=26
+  ) %>%
+  ggplot()+geom_sf()
+
+```
+
+
+```{r}
+load(url("https://www.dropbox.com/s/elnvocol0nnkcc9/sf_northTaiwan.Rda?dl=1"))
+
+```
+
+
+
+```{r}
+sf_northTaiwan %>%
+  st_centroid(of_largest_polygon = T) ->sf_centroid_northTaiwan
+
+sf_centroid_northTaiwan
+
+sf_centroid_northTaiwan %>%
+  
+```
+
+
+```{r}
+world %>% 
+  filter(
+    subregion=="Northern America"
+  ) %>% 
+  ggplot()+geom_sf()+
+  geom_sf_text(
+    aes(label=name_long)
+  )
+```
+
+
+```{r}
+load(url("https://www.dropbox.com/s/1jwm27dhh4874ch/sf_tpe_mrt.Rda?dl=1"))
+
+sf_taipei %>% st_crs
+```
+
+
+```{r}
+load(url("https://www.dropbox.com/s/uvco1te2kbs6o01/MRT_Taipei.Rda?dl=1"))
+```
+
+```{r}
+sf_mrtStops_tpe %>%
+  st_crs() -> sf_mrtStops_tpe_crs
+sf_mrtStops_tpe_crs
+```
+
+```{r}
+#read_sf("C:/Users/user/Documents/GitHub/secondpractice310/course-108-1-inclass-datavisualization/mapdata201907050841") ->sf_mrt
+```
+
+
+```{r}
+sf_mrtStops_tpe %>%
+  filter(
+    stringr::str_detect(經過路線,"BL")
+  ) -> sf_mrtStops_tpe_BL
+```
+
+```{r}
+sf_mrtStops_tpe_BL %>%
+  mutate(
+    站號 = stringr::str_extract(
+      經過路線,"(?<=(BL))[:digit:]+"   #找出屬於BL字眼之後的數字，使data照順序
+    )
+  ) %>%
+  arrange(站號)-> sf_mrtStops_BL
+```
+
+```{r}
+sf_northTaiwan %>%
+  ggplot()+geom_sf()+
+  geom_sf(
+    data=sf_mrtStops_BL
+  )+
+  coord_sf(
+    xlim=c(121.4,121.7),
+    ylim=c(24.9,25.1)
+  ) -> gg_tpe_mrt
+gg_tpe_mrt
+```
+
+```{r}
+sf_mrtStops_BL %>%
+  coord_() ->bl_coords
+
+bl_coords
+```
+
+
+```{r}
+gg_tpe_mrt+
+  geom_path(
+    data = data.frame(
+      x= bl_coords[,"X"]
+    )
+  )
+```
+
+
+
+```{r}
+sf_mrtStops_tpe_BL %>% 
+  mutate(
+    站號=str_extract(經過路線,"(?<=(BL))[:digit:]+")
+  ) %>%
+  arrange(站號)  %>%
+  st_geometry() %>%
+  st_coordinates() %>% # matrix of coordinates
+  st_linestring() %>%
+  st_sfc() -> sfc_mrtline_BL
+
+class(sfc_mrtline_BL)
+
+sf_northTaiwan %>% st_crs() ->crs0
+
+sfc_mrtline_BL %>%
+  st_set_crs(crs0) ->sfc_mrtline_BL  ##class一定要是sfc
+```
+
+```{r}
+sf_mrtStops_tpe %>% 
+  st_crs -> crs0
+
+sfc_mrtline_BL %>%
+  st_set_crs(crs0) -> sfc_mrtline_BL
+```
+
+```{r}
+gg_tpe_mrt +
+  geom_sf(
+    data=sfc_mrtline_BL
+  ) +
+  coord_sf(
+    xlim = c(121.4,121.7),
+    ylim = c(24.9,25.1)
+  )
+```
+
+
+```{r}
+gg_tpe_mrt +
+  geom_sf(
+    data = sfc_mrtline_BL
+  )
+```
+
