@@ -1,0 +1,39 @@
+---
+title: "20191204"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    self_contained: false
+    lib_dir: "support"
+---
+
+```{r setup, eval=TRUE}
+library(flexdashboard)
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r, eval=FALSE}
+plot(pressure)
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+

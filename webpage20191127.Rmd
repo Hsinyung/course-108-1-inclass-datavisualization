@@ -30,17 +30,15 @@ load(url("https://github.com/tpemartin/course-108-1-inclass-datavisualization/bl
 names(graphData$traffic) %>% # 檢查travelerFromAsia dataframe欄位名稱
 tmcn::toUTF8() -> names(graphData$traffic) # 正確轉成utf8 存回原欄位名稱
 
-自強號 = 自強號-自強號[1],
-    莒光號 = 莒光號-莒光號[1],
-    區間列車 = 區間列車 - 區間列車[1],
-    高鐵 = 高鐵 - 高鐵[1]
-
 graphData$traffic <-graphData$traffic[c("年別","區間列車","高鐵","自強號","莒光號")]
 
 
 graphData$traffic %>%
   mutate(
-    自強號 = 自強號 - 
+    自強號 = 自強號 - 自強號[1],
+    莒光號 = 莒光號 - 莒光號[1],
+    區間列車 = 區間列車 - 區間列車[1],
+    高鐵 = 高鐵 - 高鐵[1]
   ) ->graphData$traffic
 
 
@@ -68,16 +66,16 @@ graphData$traffic %>%
         panel.background = element_rect(fill = "#9B4322"),
         axis.ticks.x = element_line(color = "white"),
         axis.ticks.y = element_line(color = "white"),
-        axis.text.x = element_text(color = "white"),
-        axis.text.y = element_text(color = "white"),
-        axis.title.x = element_text(color = "white"),
-        axis.title.y = element_text(color = "white"),
+        axis.text.x = element_text(color = "white",size = 20),
+        axis.text.y = element_text(color = "white",size = 20),
+        axis.title.x = element_text(color = "white",size = 20),
+        axis.title.y = element_text(color = "white",size = 20),
         axis.line = element_line(color = "white"),
-        plot.title = element_text(color = "white",face = "bold"),
-        plot.subtitle = element_text(color = "white"),
+        plot.title = element_text(color = "white",face = "bold",size = 40),
+        plot.subtitle = element_text(color = "white",size = 30),
         legend.background = element_rect(fill = "#9B4322"),
-        legend.text=element_text(colour="white"),
-        legend.title = element_text(color = "white"))
+        legend.text=element_text(colour="white",size = 20),
+        legend.title = element_text(color = "white",size = 20))
 ```
 
 
