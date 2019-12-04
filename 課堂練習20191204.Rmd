@@ -8,7 +8,7 @@ output: html_document
 ```{r basic setup, message=FALSE, echo=TRUE, eval=T}
 library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
 library(tidyr); library(showtext); library(tidyverse); library(colorspace);
-library(rvest);library(XML);library(xml2)
+library(rvest);library(XML);library(xml2);library(listviewer)
 
 
 font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
@@ -24,10 +24,9 @@ source("https://www.dropbox.com/s/wlv1ssxqq6n4p7u/gg_hw5_004.R?dl=1",encoding = 
 ```
 
 ```{r}
-plot_tree %>%
+gg_hw5_004 %>%
   ggplotly() ->
   pltly_hw5_004
-pltly_hw5_004
 ```
 
 
@@ -39,5 +38,84 @@ file.edit(".Rprofile")
 
 ```{r}
 api_create(pltly_hw5_004,filename="pltly_hw5_004",fileopt="overwrite") -> Meta_pltly_hw5_004
+```
+
+```{r}
+pltly_hw5_004_v1 <- api_download_plot("1","Chiaoyi")
+
+pltly_hw5_004_v1
+```
+
+```{r}
+save(pltly_hw5_004_v1,file = "Element.Rda")
+```
+
+
+```{r}
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+   geom_point() + geom_smooth()
+pltly_p0 <- ggplotly(p)
+
+
+```
+
+
+```{r}
+pltly_p0
+```
+
+
+```{r}
+pltly_p0 %>% 
+  plotly_json()
+```
+
+
+
+```{r}
+pltly_p <- 
+  pltly_p0 %>% 
+  style(
+    traces=2:3,
+    hoverinfo = "none" ### 不顯示
+    ) 
+
+pltly_p %>% layout(
+  title="hovertext='none' on traces 2-3"
+)
+pltly_p
+```
+
+
+```{r}
+pltly_p0 %>% 
+  style(
+    traces=1,
+    hoverinfo="x") %>% ### 顯示x座標
+  layout(
+    title="hoverinfo='x'"
+  )
+```
+
+```{r}
+pltly_p0 %>% 
+  style(
+    traces=1,
+    hoverinfo="x+y") %>% ### 顯示x,y座標
+  layout(
+    title="hoverinfo='x+y'"
+  )
+```
+
+
+```{r}
+pltly_p <-    
+  pltly_p0 %>% 
+  style(
+    traces=1,
+    hovertext=mtcars %>% rownames)  ### hover內容設定
+
+pltly_p %>%
+  layout(title="hovertext=<指定字串> on traces 1")
 ```
 

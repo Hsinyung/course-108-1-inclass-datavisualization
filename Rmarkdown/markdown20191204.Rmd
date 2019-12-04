@@ -18,8 +18,9 @@ Column {data-width=650}
 
 ### Chart A
 
-```{r, eval=FALSE}
-plot(pressure)
+```{r}
+load("~/GitHub/secondpractice310/course-108-1-inclass-datavisualization/Element.Rda")
+pltly_hw5_004_v1
 ```
 
 Column {data-width=350}
