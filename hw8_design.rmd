@@ -1,0 +1,39 @@
+---
+title: "homework 8 design"
+author: "林茂廷"
+date: "12/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Mock info of a usr event.
+
+  * [website news](http://usrsoc.ntpu.edu.tw/news.html)
+  
+  * [USR facebook page](https://www.facebook.com/NTPUSOCUSR/)
+  
+    * fan page 範例： https://www.facebook.com/ntpu.econ.podcast.champ.2015/
+  
+    * Before the event starts:
+    
+      * poster: https://i.imgur.com/a2cAR5X.jpg
+      
+      * Source of reference: https://app.bitly.com/Bi9c5WPQxZj/bitlinks/2OFJuEX
+      
+        Bitly: 
+        account id: econ.mtlin@gmail.com
+        account pwd: 93WvHzfU  
+    * After the event finishes: 
+    
+      * news report: http://usrsoc.ntpu.edu.tw/news/2019/11/18/ntpuusr.html
+      
+  * Tracking: 
+  
+    * Google analytics: https://analytics.google.com/analytics/web/#/report-home/a54516992w87479473p92320289
+    
+範例：
+
+  * https://docs.google.com/spreadsheets/d/13OlSp_KxrLpX9QXs7XIJI0Pcr60TIKN0fTiEZEEP31Y/edit?usp=sharing

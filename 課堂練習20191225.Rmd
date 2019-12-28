@@ -1,0 +1,32 @@
+---
+title: "Untitled"
+author: "Joey"
+date: "2019年10月23日"
+output: html_document
+---
+
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace);
+library(rvest);library(XML);library(xml2);library(listviewer)
+
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+
+source("https://www.dropbox.com/s/mdx4777ugnluspz/webApplications.R?dl=1", encoding = "UTF-8")
+```
+
+
+```{r}
+webapp_project_create(
+  dirlib = "./Ch7",
+  overwrite = T
+)
+```
+
+
+
+

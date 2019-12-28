@@ -1,0 +1,52 @@
+---
+title: "Untitled"
+author: "Joey"
+date: "2019年10月23日"
+output: html_document
+---
+
+```{r basic setup, message=FALSE, echo=TRUE, eval=T}
+library(dplyr); library(stringr); library(ggplot2); library(plotly); library(lubridate); library(readr); library(colorspace); library(grDevices); library(shiny); library(shinyjs); library(scales)
+library(tidyr); library(showtext); library(tidyverse); library(colorspace);
+library(rvest);library(XML);library(xml2);library(listviewer);library(gridSVG)
+
+
+font_add("QYuan","C:/Users/user/Desktop/cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+theme_set(theme_classic())
+knitr::opts_chunk$set(out.width='80%', fig.asp=.75, fig.align='center', fig.showtext=T)
+```
+
+
+```{r}
+source("https://www.dropbox.com/s/mdx4777ugnluspz/webApplications.R?dl=1", encoding = "UTF-8")
+```
+
+
+```{r}
+dir.create(
+  "./1211"
+)
+download.file("https://raw.githubusercontent.com/tim8537099/course-108-1-inclass-datavisualization/master/example/tet.Rmd",
+              destfile="1211/tet.Rmd"
+)
+download.file("https://github.com/tim8537099/course-108-1-inclass-datavisualization/blob/master/example/plot_us.Rda?raw=true",
+              destfile="1211/plot_us.Rda"
+)
+
+file.edit("1211/tet.Rmd")
+```
+
+```{r}
+webapp_project_create(
+  dirlib = "./1211/webapp",
+  overwrite = T
+)
+```
+
+
+```{r}
+download.file("https://www.dropbox.com/s/99tfecfkblpsij8/getSVGelement.zip?dl=1",
+              destfile = "getSVGelement.zip")
+```
+
